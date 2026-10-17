@@ -33,7 +33,7 @@ class Settings(BaseSettings):
             for  origin in origins
         ):
             raise ValueError(
-                "CORS_ORGINS would be HTTP(S) explicit origins"
+                "CORS_ORGINS must be HTTP(S) explicit origins"
             )
         return origins
     
@@ -41,18 +41,18 @@ class Settings(BaseSettings):
     def validate_production(self):
         if self.app_env == "production":
             if self.debug:
-                raise ValueError("DEBUG would be false in production.")
+                raise ValueError("DEBUG must be false in production.")
             
             if any(
                 not origin.startswith("https://")
                 for origin in self.cors_origins
             ):
                 raise ValueError(
-                    "Production origins would use HTTPS."
+                    "Production origins must use HTTPS."
                 )
         return self
     
     
 @lru_cache
 def get_settings() -> Settings:
-    return Settings
+    return Settings()
