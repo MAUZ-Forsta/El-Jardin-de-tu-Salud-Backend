@@ -16,6 +16,8 @@ class Settings(BaseSettings):
     
     app_name: str = "La Tia Richard API"
     app_env: Literal["development", "test", "production"] = "development"
+    database_url: str | None = None
+    test_database_url: str | None = None
     debug: bool = False
     
     cors_origins: list[str] = Field(
