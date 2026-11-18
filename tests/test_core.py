@@ -75,3 +75,12 @@ def test_not_found_error():
 
     assert response.status_code == 404
     assert response.json()["error"]["code"] == "NOT_FOUND"
+
+
+def test_unrelated_debug_environment_does_not_break_settings(monkeypatch):
+    monkeypatch.setenv("DEBUG", "release")
+    monkeypatch.delenv("APP_DEBUG", raising=False)
+
+    settings = Settings(_env_file=None, app_env="test")
+
+    assert settings.debug is False

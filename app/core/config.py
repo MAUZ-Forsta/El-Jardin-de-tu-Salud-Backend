@@ -18,12 +18,16 @@ class Settings(BaseSettings):
     app_env: Literal["development", "test", "production"] = "development"
     database_url: str | None = None
     test_database_url: str | None = None
-    debug: bool = False
+    debug: bool = Field(default=False, validation_alias="APP_DEBUG")
     
     cors_origins: list[str] = Field(
         default_factory = lambda: ["http://localhost:5173"]
     )
-    cors_allow_credentials: bool = False
+    cors_allow_credentials: bool = True
+    session_cookie_name: str = "jardin_session"
+    session_duration_hours: int = Field(default=8, ge=1, le=168)
+    session_cookie_secure: bool = False
+    session_cookie_samesite: Literal["lax", "strict"] = "lax"
     
     @field_validator("cors_origins")
     @classmethod
@@ -51,6 +55,10 @@ class Settings(BaseSettings):
             ):
                 raise ValueError(
                     "Production origins must use HTTPS."
+                )
+            if not self.session_cookie_secure:
+                raise ValueError(
+                    "SESSION_COOKIE_SECURE must be true in production."
                 )
         return self
     

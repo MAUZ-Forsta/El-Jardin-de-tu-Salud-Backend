@@ -83,3 +83,23 @@ class RegisterResponse(BaseModel):
 
     user: UserResponse
     message: str = "Cuenta registrada correctamente."
+
+
+class LoginRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    email: EmailStr
+    password: str = Field(min_length=1, max_length=128)
+
+
+class LoginResponse(BaseModel):
+    user: UserResponse
+    csrf_token: str
+
+
+class CSRFResponse(BaseModel):
+    csrf_token: str
+
+
+class LogoutResponse(BaseModel):
+    message: str = "Sesión cerrada correctamente."

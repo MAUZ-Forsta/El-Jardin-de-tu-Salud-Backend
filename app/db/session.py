@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from app.core.config import get_settings
 
+
 def create_db_engine() -> Engine:
     settings = get_settings()
     

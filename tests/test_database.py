@@ -1,13 +1,12 @@
 import os
 from pathlib import Path
 
-from alembic import command
 from alembic.config import Config
 from sqlalchemy import create_engine, text
 from sqlalchemy.engine import make_url
 
+from alembic import command
 from app.core.config import get_settings
-
 
 BASE_DIR = Path(__file__).resolve().parents[1]
 

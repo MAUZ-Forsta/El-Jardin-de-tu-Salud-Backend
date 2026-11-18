@@ -8,8 +8,10 @@ from sqlalchemy.engine import Engine, make_url
 from sqlalchemy.orm import Session
 
 from app.core.config import Settings, get_settings
+from app.core.security import hash_password
 from app.db.session import get_db
 from app.main import create_app
+from app.modules.auth.models import UserSession
 from app.modules.users.models import ClientProfile, User
 
 
@@ -44,6 +46,7 @@ def db_session(test_engine: Engine) -> Generator[Session, None, None]:
         ).all()
         user_ids = [user.id for user in users]
         if user_ids:
+            db.execute(delete(UserSession).where(UserSession.user_id.in_(user_ids)))
             db.execute(delete(ClientProfile).where(ClientProfile.user_id.in_(user_ids)))
             db.execute(delete(User).where(User.id.in_(user_ids)))
             db.commit()
@@ -65,3 +68,25 @@ def app_client(db_session: Session) -> Generator[TestClient, None, None]:
     app.dependency_overrides[get_db] = lambda: db_session
     with TestClient(app) as client:
         yield client
+
+
+@pytest.fixture
+def make_user(db_session: Session):
+    def factory(
+        *,
+        active: bool = True,
+        email: str | None = None,
+        password: str = "password-seguro-123",
+    ) -> User:
+        prefix = db_session.info["created_prefix"]
+        user = User(
+            email=email or f"{prefix}-{uuid.uuid4()}@example.com",
+            password_hash=hash_password(password),
+            is_active=active,
+        )
+        db_session.add(user)
+        db_session.commit()
+        db_session.refresh(user)
+        return user
+
+    return factory
