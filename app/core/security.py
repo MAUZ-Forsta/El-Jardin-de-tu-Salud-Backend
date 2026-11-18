@@ -1,3 +1,6 @@
+import hashlib
+import secrets
+
 from pwdlib import PasswordHash
 
 password_hash = PasswordHash.recommended()
@@ -15,3 +18,16 @@ def verify_password(
         plain_password,
         hashed_password,
     )
+
+
+def generate_token() -> str:
+    """Return a URL-safe, cryptographically secure random token."""
+    return secrets.token_urlsafe(32)
+
+
+def hash_token(token: str) -> str:
+    return hashlib.sha256(token.encode("utf-8")).hexdigest()
+
+
+def tokens_match(candidate: str, expected_hash: str) -> bool:
+    return secrets.compare_digest(hash_token(candidate), expected_hash)

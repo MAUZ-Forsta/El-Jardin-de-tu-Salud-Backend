@@ -1,13 +1,13 @@
 from logging.config import fileConfig
 
-from alembic import context
 from sqlalchemy import create_engine
 from sqlalchemy.pool import NullPool
 
+from alembic import context
 from app.core.config import get_settings
 from app.db.base import Base
-
-from app.modules.users import models as user_models
+from app.modules.auth import models as auth_models  # noqa: F401 - register metadata
+from app.modules.users import models as user_models  # noqa: F401 - register metadata
 
 config = context.config
 
