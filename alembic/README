@@ -5,6 +5,7 @@ Revisiones disponibles:
 - `fbb92a483cb4`: baseline sin operaciones.
 - `ee44ed5d90be`: tablas `users` y `client_profiles`, índice único de correo sin distinguir mayúsculas y restricciones de rol y relación.
 - `9b5b0c3d4e6f`: tabla `user_sessions`, hash único de token e índice por usuario.
+- `c7e4a91f2b35`: tablas `products` y `product_images`, restricciones de tipo, categoría, precio y orden de imágenes.
 
 `env.py` obtiene la conexión de `DATABASE_URL` y registra los modelos en `Base.metadata`. Antes de ejecutar `python -m alembic upgrade head`, comprobar la URL de la base seleccionada. Para la base de pruebas, usar `python -m scripts.migrate_test_db`: verifica que el destino sea `tia_richrad_test` y que difiera de la base principal.
 

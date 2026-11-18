@@ -12,6 +12,7 @@ from app.core.security import hash_password
 from app.db.session import get_db
 from app.main import create_app
 from app.modules.auth.models import UserSession
+from app.modules.products.models import Product
 from app.modules.users.models import ClientProfile, User
 
 
@@ -41,6 +42,13 @@ def db_session(test_engine: Engine) -> Generator[Session, None, None]:
         yield db
     finally:
         db.rollback()
+        products = db.scalars(
+            select(Product).where(Product.name.like(f"{prefix}-%"))
+        ).all()
+        for product in products:
+            db.delete(product)
+        if products:
+            db.commit()
         users = db.scalars(
             select(User).where(User.email.like(f"{prefix}-%@example.com"))
         ).all()

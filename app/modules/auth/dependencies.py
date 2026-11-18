@@ -51,3 +51,18 @@ def require_csrf(
     if not csrf_token or not tokens_match(csrf_token, session.csrf_token_hash):
         raise AppException(403, "INVALID_CSRF_TOKEN", "Token CSRF inválido.")
     return session
+
+
+def require_admin(user: User = Depends(get_current_user)) -> User:
+    if user.role != "ADMIN":
+        raise AppException(403, "ADMIN_REQUIRED", "Permiso de administrador requerido.")
+    return user
+
+
+def require_admin_write(
+    session: UserSession = Depends(require_csrf),
+    _origin: None = Depends(require_trusted_origin),
+) -> User:
+    if session.user.role != "ADMIN":
+        raise AppException(403, "ADMIN_REQUIRED", "Permiso de administrador requerido.")
+    return session.user
