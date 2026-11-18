@@ -3,8 +3,11 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import Settings, get_settings
 from app.core.exceptions import register_exception_handlers
+from app.modules.auth.router import router as auth_router
+
 
 def create_app(settings: Settings | None = None) -> FastAPI:
+    supplied_settings = settings is not None
     settings = settings or get_settings()
     
     app = FastAPI(
@@ -20,19 +23,25 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     )
     
     register_exception_handlers(app)
+    if supplied_settings:
+        app.dependency_overrides[get_settings] = lambda: settings
     
     @app.get("/health")
     async def health():
         return {"status": "ok"}
     
-    return CORSMiddleware(
-        app = app,
+    app.include_router(auth_router)
+
+    app.add_middleware(
+        CORSMiddleware,
         allow_origins = settings.cors_origins,
         allow_credentials = settings.cors_allow_credentials,
         allow_methods = [
             "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"
         ],
-        allow_headers = ["Authorization", "Content-Type"],
+        allow_headers = ["Authorization", "Content-Type", "X-CSRF-Token"],
     )
-    
+    return app
+
+
 app = create_app
