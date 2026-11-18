@@ -4,6 +4,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import Settings, get_settings
 from app.core.exceptions import register_exception_handlers
 from app.modules.auth.router import router as auth_router
+from app.modules.products.router import admin_router as products_admin_router
+from app.modules.products.router import public_router as products_public_router
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -31,6 +33,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         return {"status": "ok"}
     
     app.include_router(auth_router)
+    app.include_router(products_public_router)
+    app.include_router(products_admin_router)
 
     app.add_middleware(
         CORSMiddleware,
