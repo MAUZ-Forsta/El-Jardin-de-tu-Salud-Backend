@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     app_env: Literal["development", "test", "production"] = "development"
     database_url: str | None = None
     test_database_url: str | None = None
-    debug: bool = False
+    debug: bool = Field(default=False, validation_alias="APP_DEBUG")
     
     cors_origins: list[str] = Field(
         default_factory = lambda: ["http://localhost:5173"]
